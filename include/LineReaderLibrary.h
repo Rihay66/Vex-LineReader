@@ -20,10 +20,9 @@ namespace ReadLine{
 
       float Threshold;
       //---------------------------------------------
-      int lineThresholdMath(int DarkValue, int LightValue);//returnable
-
       //Used to return a value of what the line module 'sees'
       bool moduleDetection(line module, int thresh);//returnable
+      bool moduleDetectionInverted(line module, int thresh);//returnable
 
       void calibration(line module); //Function to do calibration of the line reader
 

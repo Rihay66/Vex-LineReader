@@ -25,11 +25,24 @@ int LineReadModule::LateUpdate(void){
   return 0;
 }
 
+bool LineReadModule::moduleDetectionInverted(line module, int thresh){
+
+  //Used to detect line reader value on inverted surfaces
+
+  if(module.value(analogUnits::pct) < thresh){
+    //Dark surface detection
+    return true;
+  }else{
+    //Light surface detection
+    return false;
+  }
+}
+
 bool LineReadModule::moduleDetection(line module, int thresh){
 
   //Used to detect line reader value
 
-  if(module.value(analogUnits::pct) < thresh){
+  if(module.value(analogUnits::pct) > thresh){
       //Dark detection
       return true;
   }else{
@@ -39,29 +52,33 @@ bool LineReadModule::moduleDetection(line module, int thresh){
 }
 
 int LineReadModule::Update(line module1, line module2, line module3){
-  
+
   while(1){
+
+     bool line1 = moduleDetectionInverted(module1, Threshold);
+     bool line2 = moduleDetectionInverted(module2, Threshold);
+     bool line3 = moduleDetectionInverted(module3, Threshold);
+
     //Update every 25 millisecond frame
     int temp = 1;
-    if(moduleDetection(module1, Threshold) == true){
+    if(line2 == true){
+      //Move forward
+      Motor10.spin(forward, 5, percent);
+      Motor1.spin(forward, 5, percent);
+      wait(10, msec);
+    }else{
+      //Switch to check to move back into the line
+      wait(5, msec);
+      if(line1 == true || line3 == false){
         //Move right
         Motor1.spin(forward, 1, percent);
         Motor10.spin(forward, 3, percent);
-    }
-    else {
-        //Move left
-        Motor1.spin(forward, 1, percent);
-        Motor10.spin(forward, 3, percent);
-    }
-    if(moduleDetection(module2, Threshold) == true){
-      //Move forward
-      Brain.Screen.setCursor(temp, 1);
-      Brain.Screen.print(module2.value(analogUnits::pct));
-      Motor10.spin(forward, 5, percent);
-      Motor1.spin(forward, 5, percent);
-    }else{
-      //Use the late update to stop the robot
-      //LateUpdate();
+        if(line1 == false || line3 == true){
+          //Move left
+          Motor1.spin(forward, 1, percent);
+          Motor10.spin(forward, 3, percent);
+        }
+      }
     }
     temp += 1;
 
@@ -112,12 +129,4 @@ void LineReadModule::calibration(line module){
     Brain.Screen.print("Threshold is %4f", Threshold);
     wait(1.8f, sec);
   }
-}
-
-int LineReadModule::lineThresholdMath(int Dark, int Light){
-
-  int ans;
-  ans = (Dark + Light) / 2;
-  return ans;
-
 }
