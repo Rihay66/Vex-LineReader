@@ -55,33 +55,24 @@ int LineReadModule::Update(line module1, line module2, line module3){
 
   while(1){
 
-     bool line1 = moduleDetectionInverted(module1, Threshold);
-     bool line2 = moduleDetectionInverted(module2, Threshold);
-     bool line3 = moduleDetectionInverted(module3, Threshold);
+    bool line1 = moduleDetection(module1, Threshold);
+    bool line2 = moduleDetection(module2, Threshold);
+    bool line3 = moduleDetection(module3, Threshold);
 
-    //Update every 25 millisecond frame
+    bool line1Inv = moduleDetectionInverted(module1, Threshold);
+    bool line2Inv = moduleDetectionInverted(module2, Threshold);
+    bool line3Inv = moduleDetectionInverted(module3, Threshold);
+
+    //DEBUG MODE
     int temp = 1;
-    if(line2 == true){
-      //Move forward
-      Motor10.spin(forward, 5, percent);
-      Motor1.spin(forward, 5, percent);
-      wait(10, msec);
-    }else{
-      //Switch to check to move back into the line
-      wait(5, msec);
-      if(line1 == true || line3 == false){
-        //Move right
-        Motor1.spin(forward, 1, percent);
-        Motor10.spin(forward, 3, percent);
-        if(line1 == false || line3 == true){
-          //Move left
-          Motor1.spin(forward, 1, percent);
-          Motor10.spin(forward, 3, percent);
-        }
-      }
-    }
-    temp += 1;
+    
+    //Testing the value of LineTrackerD
+    Brain.Screen.print("Thresh is %.2f & line is %d & raw val is %d", Threshold, line2, module2.value(analogUnits::pct));
+    Brain.Screen.setCursor(temp, 1);
 
+
+    temp += 1;
+    wait(50, msec);
     //Update every 1 millisecond per frames
     Brain.Screen.clearScreen();
   }

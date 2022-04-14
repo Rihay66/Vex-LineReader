@@ -66,10 +66,10 @@ int main() {
   //Update to until Threshold is found
   while(module.Threshold == 0)
   { 
-    module.calibration(LineTrackerD);
+    module.calibration(LineTrackerE);
   }
 
-  module.Update(LineTrackerC, LineTrackerD, LineTrackerE);
+  module.Update(LineTrackerC, LineTrackerE, LineTrackerD);
   // Note : above threshold means dark, and below means light
   
 }
