@@ -1,49 +1,3 @@
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// LineTrackerA         line          A               
-// LineTrackerB         line          B               
-// LineTrackerC         line          C               
-// Motor10              motor         10              
-// Motor1               motor         1               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// LineTrackerA         line          A               
-// LineTrackerB         line          B               
-// LineTrackerE         line          E               
-// Motor10              motor         10              
-// Motor1               motor         1               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// LineTrackerA         line          A               
-// LineTrackerD         line          D               
-// LineTrackerE         line          E               
-// Motor10              motor         10              
-// Motor1               motor         1               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-/*----------------------------------------------------------------------------*/
-/*                                                                            */
-/*    Module:       main.cpp                                                  */
-/*    Author:       C:\Users\onthe.LAPTOP-LTNLPS3L                            */
-/*    Created:      Tue Mar 01 2022                                           */
-/*    Description:  V5 project                                                */
-/*                                                                            */
-/*----------------------------------------------------------------------------*/
-
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// LineTrackerC         line          C               
-// LineTrackerD         line          D               
-// LineTrackerE         line          E               
-// Motor10              motor         10              
-// Motor1               motor         1               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-
 #include "vex.h"
 #include "LineReaderLibrary.h"
 #include "iostream"
@@ -53,9 +7,6 @@ using namespace ReadLine;
 using namespace vex;
 
 controller Controller;
-
-// Used to tell if system being calibrated for line reader
-// bool isCalib;
 
 LineReadModule module;
 
@@ -98,10 +49,10 @@ int main() {
   }
   */
 
-  //Current ClawBot has a line reader config of ACB
+  //Current ClawBot has a line reader config of CED
   //            right         center        left
   while(1){
-    module.Update(LineTrackerA, LineTrackerC, LineTrackerB);
+    module.Update(LineTrackerC, LineTrackerE, LineTrackerD);
   }
   // Note : above threshold means dark, and below means light
   
