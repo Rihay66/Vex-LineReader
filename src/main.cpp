@@ -1,3 +1,30 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// LineTrackerA         line          A               
+// LineTrackerB         line          B               
+// LineTrackerC         line          C               
+// Motor10              motor         10              
+// Motor1               motor         1               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// LineTrackerA         line          A               
+// LineTrackerB         line          B               
+// LineTrackerE         line          E               
+// Motor10              motor         10              
+// Motor1               motor         1               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// LineTrackerA         line          A               
+// LineTrackerD         line          D               
+// LineTrackerE         line          E               
+// Motor10              motor         10              
+// Motor1               motor         1               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -64,12 +91,18 @@ int main() {
   Brain.Screen.print("Calibrating");
 
   //Update to until Threshold is found
+  /*
   while(module.Threshold == 0)
   { 
     module.calibration(LineTrackerE);
   }
+  */
 
-  module.Update(LineTrackerC, LineTrackerE, LineTrackerD);
+  //Current ClawBot has a line reader config of ACB
+  //            right         center        left
+  while(1){
+    module.Update(LineTrackerA, LineTrackerC, LineTrackerB);
+  }
   // Note : above threshold means dark, and below means light
   
 }

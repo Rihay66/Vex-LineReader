@@ -3,9 +3,9 @@ using namespace vex;
 extern brain Brain;
 
 // VEXcode devices
+extern line LineTrackerA;
+extern line LineTrackerB;
 extern line LineTrackerC;
-extern line LineTrackerD;
-extern line LineTrackerE;
 extern motor Motor10;
 extern motor Motor1;
 

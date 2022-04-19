@@ -6,6 +6,7 @@ using namespace vex;
 
 int LineReadModule::LateUpdate(void){
   while(1){
+    /*
     int temp = 1;
     wait(50, msec);
     if(moduleDetection(LineTrackerC, Threshold) == false && moduleDetection(LineTrackerD, Threshold) == false && moduleDetection(LineTrackerE, Threshold) == false){
@@ -20,6 +21,7 @@ int LineReadModule::LateUpdate(void){
 
     wait(1, sec);
     Brain.Screen.clearScreen();
+    */
   }
 
   return 0;
@@ -52,8 +54,11 @@ bool LineReadModule::moduleDetection(line module, int thresh){
 }
 
 int LineReadModule::Update(line module1, line module2, line module3){
-
+  
+  Threshold = 50;
+  
   while(1){
+    //Note: The Calibration function can be used to find the value on a surface
 
     bool line1 = moduleDetection(module1, Threshold);
     bool line2 = moduleDetection(module2, Threshold);
@@ -67,15 +72,17 @@ int LineReadModule::Update(line module1, line module2, line module3){
     int temp = 1;
     
     //Testing the value of LineTrackerD
-    Brain.Screen.print("Thresh is %.2f & line is %d & raw val is %d", Threshold, line2, module2.value(analogUnits::pct));
+    Brain.Screen.print("%d %d %d ", line1, line2, line3);
+    Brain.Screen.print(" %d %d %d", module1.value(analogUnits::pct), module2.value(analogUnits::pct), module3.value(analogUnits::pct));
     Brain.Screen.setCursor(temp, 1);
-
 
     temp += 1;
     wait(50, msec);
     //Update every 1 millisecond per frames
     Brain.Screen.clearScreen();
   }
+
+  return 1;
 }
 
 void LineReadModule::calibration(line module){
