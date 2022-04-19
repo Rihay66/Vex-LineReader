@@ -6,6 +6,7 @@ using namespace vex;
 
 int LineReadModule::LateUpdate(void){
   while(1){
+    /*
     int temp = 1;
     wait(50, msec);
     if(moduleDetection(LineTrackerC, Threshold) == false && moduleDetection(LineTrackerD, Threshold) == false && moduleDetection(LineTrackerE, Threshold) == false){
@@ -20,16 +21,30 @@ int LineReadModule::LateUpdate(void){
 
     wait(1, sec);
     Brain.Screen.clearScreen();
+    */
   }
 
   return 0;
+}
+
+bool LineReadModule::moduleDetectionInverted(line module, int thresh){
+
+  //Used to detect line reader value on inverted surfaces
+
+  if(module.value(analogUnits::pct) < thresh){
+    //Dark surface detection
+    return true;
+  }else{
+    //Light surface detection
+    return false;
+  }
 }
 
 bool LineReadModule::moduleDetection(line module, int thresh){
 
   //Used to detect line reader value
 
-  if(module.value(analogUnits::pct) < thresh){
+  if(module.value(analogUnits::pct) > thresh){
       //Dark detection
       return true;
   }else{
@@ -40,34 +55,34 @@ bool LineReadModule::moduleDetection(line module, int thresh){
 
 int LineReadModule::Update(line module1, line module2, line module3){
   
+  Threshold = 50;
+  
   while(1){
-    //Update every 25 millisecond frame
-    int temp = 1;
-    if(moduleDetection(module1, Threshold) == true){
-        //Move right
-        Motor1.spin(forward, 1, percent);
-        Motor10.spin(forward, 3, percent);
-    }
-    else {
-        //Move left
-        Motor1.spin(forward, 1, percent);
-        Motor10.spin(forward, 3, percent);
-    }
-    if(moduleDetection(module2, Threshold) == true){
-      //Move forward
-      Brain.Screen.setCursor(temp, 1);
-      Brain.Screen.print(module2.value(analogUnits::pct));
-      Motor10.spin(forward, 5, percent);
-      Motor1.spin(forward, 5, percent);
-    }else{
-      //Use the late update to stop the robot
-      //LateUpdate();
-    }
-    temp += 1;
+    //Note: The Calibration function can be used to find the value on a surface
 
+    bool line1 = moduleDetection(module1, Threshold);
+    bool line2 = moduleDetection(module2, Threshold);
+    bool line3 = moduleDetection(module3, Threshold);
+
+    bool line1Inv = moduleDetectionInverted(module1, Threshold);
+    bool line2Inv = moduleDetectionInverted(module2, Threshold);
+    bool line3Inv = moduleDetectionInverted(module3, Threshold);
+
+    //DEBUG MODE
+    int temp = 1;
+    
+    //Testing the value of LineTrackerD
+    Brain.Screen.print("%d %d %d ", line1, line2, line3);
+    Brain.Screen.print(" %d %d %d", module1.value(analogUnits::pct), module2.value(analogUnits::pct), module3.value(analogUnits::pct));
+    Brain.Screen.setCursor(temp, 1);
+
+    temp += 1;
+    wait(50, msec);
     //Update every 1 millisecond per frames
     Brain.Screen.clearScreen();
   }
+
+  return 1;
 }
 
 void LineReadModule::calibration(line module){
@@ -112,12 +127,4 @@ void LineReadModule::calibration(line module){
     Brain.Screen.print("Threshold is %4f", Threshold);
     wait(1.8f, sec);
   }
-}
-
-int LineReadModule::lineThresholdMath(int Dark, int Light){
-
-  int ans;
-  ans = (Dark + Light) / 2;
-  return ans;
-
 }
