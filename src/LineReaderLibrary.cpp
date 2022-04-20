@@ -60,14 +60,18 @@ int LineReadModule::Update(line module1, line module2, line module3){
   while(1){
     //Note: The Calibration function can be used to find the value on a surface
 
-    bool line1 = moduleDetection(module1, Threshold);
-    bool line2 = moduleDetection(module2, Threshold);
-    bool line3 = moduleDetection(module3, Threshold);
+    float tr1 = 55;
+    float tr2 = 53;
+    float tr3 = 61;
 
+    bool line1 = moduleDetection(module1, tr1);
+    bool line2 = moduleDetection(module2, tr2);
+    bool line3 = moduleDetection(module3, tr3);
+    /*
     bool line1Inv = moduleDetectionInverted(module1, Threshold);
     bool line2Inv = moduleDetectionInverted(module2, Threshold);
     bool line3Inv = moduleDetectionInverted(module3, Threshold);
-
+    */
     //DEBUG MODE
     int temp = 1;
     

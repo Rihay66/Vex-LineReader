@@ -1,3 +1,21 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// LineTrackerB         line          B               
+// LineTrackerA         line          A               
+// LineTrackerC         line          C               
+// Motor10              motor         10              
+// Motor1               motor         1               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// LineTrackerE         line          E               
+// LineTrackerA         line          A               
+// LineTrackerC         line          C               
+// Motor10              motor         10              
+// Motor1               motor         1               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 #include "vex.h"
 #include "LineReaderLibrary.h"
 #include "iostream"
@@ -52,7 +70,7 @@ int main() {
   //Current ClawBot has a line reader config of CED
   //            right         center        left
   while(1){
-    module.Update(LineTrackerC, LineTrackerE, LineTrackerD);
+    module.Update(LineTrackerB, LineTrackerC, LineTrackerA);
   }
   // Note : above threshold means dark, and below means light
   
