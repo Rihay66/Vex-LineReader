@@ -82,21 +82,29 @@ int LineReadModule::Update(line module1, line module2, line module3){
 
     if(line1 && line2 && line3){
       Brain.Screen.print("Center");
+      Motor1.spin(forward, 2, pct);
+      Motor10.spin(forward, 2, pct);
       break;
     }else{
       if(line1 && line2 && !line3){
         Brain.Screen.print("Left");
+        Motor1.spin(forward, 2, pct);
+        Motor10.spin(forward, 1, pct);
+        wait(10, msec);
         break;
       }else if(!line1 && line2 && line3){
         Brain.Screen.print("Right");
+        Motor1.spin(forward, 1, pct);
+        Motor10.spin(forward, 2, pct);
+        wait(10, msec);
         break;
-      }
+        }
     }
 
     Brain.Screen.setCursor(temp, 1);
 
     temp += 1;
-    wait(50, msec);
+    wait(15, msec);
     //Update every 1 millisecond per frames
     Brain.Screen.clearScreen();
   }
