@@ -76,6 +76,21 @@ int LineReadModule::Update(line module1, line module2, line module3){
     Brain.Screen.print(" %d %d %d", module1.value(analogUnits::pct), module2.value(analogUnits::pct), module3.value(analogUnits::pct));
     Brain.Screen.setCursor(temp, 1);
 
+    if(line1 && line2 && line3){
+      Brain.Screen.print("Center");
+      break;
+    }else{
+      if(line1 && line2 && !line3){
+        Brain.Screen.print("Left");
+        break;
+      }else if(!line1 && line2 && line3){
+        Brain.Screen.print("Right");
+        break;
+      }
+    }
+
+    Brain.Screen.setCursor(temp, 1);
+
     temp += 1;
     wait(50, msec);
     //Update every 1 millisecond per frames
