@@ -16,10 +16,6 @@ namespace ReadLine{
       // Make values or variables
       float Threshold[3];
 
-      line module1;
-      line module2;
-      line module3;
-
       //---------------------------------------------
       //Used to return a value of what the line module 'sees'
       bool moduleDetection(line module, int thresh);//returnable
@@ -31,7 +27,7 @@ namespace ReadLine{
   class LineRead{
     public:
       int LateUpdate(void); //Used to update function and variables very late and will be run seperately but parallel to other loops
-      int Update(); //Used to update functions and variables
+      int Update(line module1, line module2, line module3); //Used to update functions and variables
   };
 
   class SDCARD{

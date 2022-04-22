@@ -26,27 +26,27 @@ using namespace vex;
 
 controller Controller;
 
-LineReadCalibration cal;
+LineRead read;
 
 void pre_auton(void){
   vexcodeInit();
 }
-
+/*
 void userControl(void){
   while(1){
     if(Controller.ButtonA.pressing()){
-      cal.setVariable = true;
+      
     }else{
-      cal.setVariable = false;
+      
     }
   }
 }
-
+*/
 competition Competition;
 
 int main() {
   //Initialize
-  Competition.drivercontrol(userControl);
+  //Competition.drivercontrol(userControl);
   pre_auton();
   
   //Learn how to move a motorgroup
@@ -64,7 +64,7 @@ int main() {
   //Current ClawBot has a line reader config of CED
   //            right         center        left
   while(1){
-    cal.Update(LineTrackerB, LineTrackerC, LineTrackerA);
+    read.Update(LineTrackerB, LineTrackerC, LineTrackerA);
   }
   // Note : above threshold means dark, and below means light
   
