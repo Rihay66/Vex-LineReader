@@ -4,7 +4,7 @@
 using namespace ReadLine;
 using namespace vex;
 
-int LineReadModule::LateUpdate(void){
+int LineRead::LateUpdate(void){
   while(1){
     /*
     int temp = 1;
@@ -27,7 +27,7 @@ int LineReadModule::LateUpdate(void){
   return 0;
 }
 
-bool LineReadModule::moduleDetectionInverted(line module, int thresh){
+bool LineReadCalibration::moduleDetectionInverted(line module, int thresh){
 
   //Used to detect line reader value on inverted surfaces
 
@@ -40,7 +40,7 @@ bool LineReadModule::moduleDetectionInverted(line module, int thresh){
   }
 }
 
-bool LineReadModule::moduleDetection(line module, int thresh){
+bool LineReadCalibration::moduleDetection(line module, int thresh){
 
   //Used to detect line reader value
 
@@ -53,9 +53,7 @@ bool LineReadModule::moduleDetection(line module, int thresh){
   }
 }
 
-int LineReadModule::Update(line module1, line module2, line module3){
-  
-  Threshold = 50;
+int LineRead::Update(){
   
   while(1){
     //Note: The Calibration function can be used to find the value on a surface
@@ -112,7 +110,14 @@ int LineReadModule::Update(line module1, line module2, line module3){
   return 1;
 }
 
-void LineReadModule::calibration(line module){
+void LineReadCalibration::calibration(line module){
+
+  bool setVariable = true;
+  bool isCaliLight = true;
+  bool loopCali = true;
+
+  float DarkThreshold = 0;
+  float LightThreshold = 0;
 
   wait(2, sec);
   
@@ -150,7 +155,7 @@ void LineReadModule::calibration(line module){
 
   if(loopCali == false){
     Brain.Screen.setCursor(1, 1);
-    Threshold = (LightThreshold + DarkThreshold) / 2;
+    //Threshold = (LightThreshold + DarkThreshold) / 2;
     Brain.Screen.print("Threshold is %4f", Threshold);
     wait(1.8f, sec);
   }

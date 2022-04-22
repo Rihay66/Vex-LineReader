@@ -26,7 +26,7 @@ using namespace vex;
 
 controller Controller;
 
-LineReadModule module;
+LineReadCalibration cal;
 
 void pre_auton(void){
   vexcodeInit();
@@ -35,9 +35,9 @@ void pre_auton(void){
 void userControl(void){
   while(1){
     if(Controller.ButtonA.pressing()){
-      module.setVariable = true;
+      cal.setVariable = true;
     }else{
-      module.setVariable = false;
+      cal.setVariable = false;
     }
   }
 }
@@ -50,12 +50,6 @@ int main() {
   pre_auton();
   
   //Learn how to move a motorgroup
-
-  module.Threshold = 0;
-  module.loopCali = true;
-  module.isCaliLight = true;
-  module.LightThreshold = 0;
-  module.DarkThreshold = 0;
 
   Brain.Screen.print("Calibrating");
 
@@ -70,7 +64,7 @@ int main() {
   //Current ClawBot has a line reader config of CED
   //            right         center        left
   while(1){
-    module.Update(LineTrackerB, LineTrackerC, LineTrackerA);
+    cal.Update(LineTrackerB, LineTrackerC, LineTrackerA);
   }
   // Note : above threshold means dark, and below means light
   
