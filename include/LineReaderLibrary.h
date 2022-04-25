@@ -34,7 +34,7 @@ namespace ReadLine{
     private:
       SDCARD(); //Load file
       ~SDCARD(); //Save file
-
-      int read(); //Read File and return a value
+    public:
+      int translate(); //Read File and return a value
   };
 };

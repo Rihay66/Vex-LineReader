@@ -163,3 +163,34 @@ void LineReadCalibration::calibration(line module){
     wait(1.8f, sec);
   }
 }
+
+//SD card constructor which can be created to initialize or do something while the object exists
+SDCARD::SDCARD(){
+  //Init the file or load the file if it exists
+
+  //[]Search for the file first and if not make a new one
+
+  //[]Store the values of the thresholds
+
+  //[]if file exist call translate function
+}
+
+//SD card destructor which can destroy the created object and do last functions
+SDCARD::~SDCARD(){
+  //Save the file
+
+  //[] Find the file
+
+  //[] Read and display what it contains
+
+  //[] call the translate function to set the Threshold
+}
+
+int SDCARD::translate(){
+
+  //Translate the txt file to code and set the values to the threshold array on the LineReadCalibration class
+
+  //set a error code for when the read can't find the existance of the txt file
+
+  return 0;
+}
