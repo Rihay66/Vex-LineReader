@@ -1,4 +1,6 @@
 #include "vex.h"
+#include "fstream"
+#include "iostream"
 
 using namespace vex;
 
@@ -35,6 +37,8 @@ namespace ReadLine{
       SDCARD(); //Load file
       ~SDCARD(); //Save file
     public:
+      std::ifstream ReadDATAFILE;
+      std::ofstream WriteDATAFILE;
       int translate(); //Read File and return a value
   };
 };

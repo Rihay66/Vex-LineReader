@@ -169,7 +169,16 @@ SDCARD::SDCARD(){
   //Init the file or load the file if it exists
 
   //[]Search for the file first and if not make a new one
+  if(Brain.SDcard.isInserted()){
+    if(ReadDATAFILE.is_open()){
 
+    }else{
+      
+    }
+  }else{
+    Brain.Screen.clearScreen();
+    Brain.Screen.print("ERROR: no SD Card inserted");
+  }
   //[]Store the values of the thresholds
 
   //[]if file exist call translate function
@@ -178,7 +187,12 @@ SDCARD::SDCARD(){
 //SD card destructor which can destroy the created object and do last functions
 SDCARD::~SDCARD(){
   //Save the file
+  if(Brain.SDcard.isInserted()){
 
+  }else{
+    Brain.Screen.clearScreen();
+    Brain.Screen.print("ERROR: no SD Card inserted");
+  }
   //[] Find the file
 
   //[] Read and display what it contains
