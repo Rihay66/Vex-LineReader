@@ -33,12 +33,13 @@ namespace ReadLine{
   };
 
   class SDCARD{
-    private:
-      SDCARD(); //Load file
-      ~SDCARD(); //Save file
     public:
       std::ifstream ReadDATAFILE;
       std::ofstream WriteDATAFILE;
+
+      SDCARD(); //Load file
+      ~SDCARD(); //Save file
+
       int translate(); //Read File and return a value
   };
 };

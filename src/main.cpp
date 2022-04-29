@@ -49,9 +49,11 @@ int main() {
   //Competition.drivercontrol(userControl);
   pre_auton();
   
+  SDCARD sd;
+
   //Learn how to move a motorgroup
 
-  Brain.Screen.print("Calibrating");
+  //Brain.Screen.print("Calibrating");
 
   //Update to until Threshold is found
   /*
@@ -63,9 +65,11 @@ int main() {
 
   //Current ClawBot has a line reader config of CED
   //            right         center        left
+  /*
   while(1){
     read.Update(LineTrackerB, LineTrackerC, LineTrackerA);
   }
+  */
   // Note : above threshold means dark, and below means light
   
 }

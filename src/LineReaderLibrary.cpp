@@ -188,9 +188,17 @@ SDCARD::SDCARD(){
 SDCARD::~SDCARD(){
   //Save the file
   if(Brain.SDcard.isInserted()){
+    Brain.Screen.print("SD card inserted");
+
+    char Name[25] = "C++ rules";
+
+    WriteDATAFILE.open("SAVE.txt", std::ios::out);
+
+    WriteDATAFILE << Name;
+
+    WriteDATAFILE.close();
 
   }else{
-    Brain.Screen.clearScreen();
     Brain.Screen.print("ERROR: no SD Card inserted");
   }
   //[] Find the file
