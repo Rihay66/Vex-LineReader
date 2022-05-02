@@ -234,7 +234,7 @@ SDCARD::SDCARD(LineReadCalibration cal){
       WriteDATAFILE.close();
 
       //get threshold array set to Line calirabtion threshold array
-      translate(cal);
+      translateToFile(cal);
     }
   }else{
     Brain.Screen.print("ERROR: no SD Card inserted");
@@ -263,6 +263,17 @@ SDCARD::~SDCARD(){
         WriteDATAFILE << tmpTreshold[x] << endl;
         x++;
       }
+      
+      //Check for each value in the file
+
+      //debug
+      Brain.Screen.clearScreen();
+      Brain.Screen.setCursor(1, 1);
+      for(int x = 0; x < arrSize;){
+        Brain.Screen.print(tmpTreshold[x]);
+        Brain.Screen.newLine();
+        x++;
+      }
 
       WriteDATAFILE.close();
 
@@ -279,7 +290,7 @@ SDCARD::~SDCARD(){
   //[] call the translate function to set the Threshold
 }
 
-void SDCARD::translate(LineReadCalibration cal){
+void SDCARD::translateToFile(LineReadCalibration cal){
 
   //Translate the txt file to code and set the values to the threshold array on the LineReadCalibration class
 
