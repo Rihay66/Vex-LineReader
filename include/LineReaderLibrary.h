@@ -1,6 +1,7 @@
 #include "vex.h"
 #include "fstream"
 #include "iostream"
+#include "sstream"
 
 using namespace vex;
 
@@ -18,18 +19,18 @@ namespace ReadLine{
       // Make values or variables
       float Threshold[3];
 
-      //---------------------------------------------
-      //Used to return a value of what the line module 'sees'
-      bool moduleDetection(line module, int thresh);//returnable
-      bool moduleDetectionInverted(line module, int thresh);//returnable
-
-      void calibration(line module); //Function to do calibration of the line reader
+      int calibration(line module, int i); //Function to do calibration of the line reader
   };
 
   class LineRead{
     public:
       int LateUpdate(void); //Used to update function and variables very late and will be run seperately but parallel to other loops
       int Update(line module1, line module2, line module3); //Used to update functions and variables
+
+      //---------------------------------------------
+      //Used to return a value of what the line module 'sees'
+      bool moduleDetection(line module, int thresh);//returnable
+      bool moduleDetectionInverted(line module, int thresh);//returnable
   };
 
   class SDCARD{
@@ -37,9 +38,11 @@ namespace ReadLine{
       std::ifstream ReadDATAFILE;
       std::ofstream WriteDATAFILE;
 
-      SDCARD(); //Load file
+      float tmpTreshold[3];
+
+      SDCARD(LineReadCalibration cal); //Load file
       ~SDCARD(); //Save file
 
-      int translate(); //Read File and return a value
+      void translate(LineReadCalibration cali); //Read File and return a value
   };
 };

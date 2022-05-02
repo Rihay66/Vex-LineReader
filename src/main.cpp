@@ -19,37 +19,76 @@
 #include "vex.h"
 #include "LineReaderLibrary.h"
 #include "iostream"
+#include "memory"
+#include "stdexcept"
 
 using namespace std;
 using namespace ReadLine;
 using namespace vex;
 
-controller Controller;
-
 LineRead read;
+LineReadCalibration cal;
+
+bool press;
 
 void pre_auton(void){
   vexcodeInit();
 }
-/*
-void userControl(void){
-  while(1){
-    if(Controller.ButtonA.pressing()){
-      
-    }else{
-      
-    }
-  }
-}
-*/
-competition Competition;
 
 int main() {
   //Initialize
-  //Competition.drivercontrol(userControl);
+
+  bool tmpB = false;
+
+  ifstream DATAFILE;
+  DATAFILE.open("SAVE.txt", ios::in);
+
+  if(DATAFILE.is_open()){
+    Brain.Screen.print("Save file found");
+    tmpB = false;
+    SDCARD sd(cal);
+  }else{
+    Brain.Screen.print("No save file");
+    tmpB = true;
+  }
+
   pre_auton();
+
+  //Close the file to check for
+  //Note: The file opened is not saved is only checked to see if it exists
+  DATAFILE.close();
   
-  SDCARD sd;
+  wait(4, sec);
+
+  Brain.Screen.clearScreen();
+
+  if(tmpB == true){
+    //Init the line array for the connected line trackersb
+    line lineArray[] = {LineTrackerA, LineTrackerC, LineTrackerB};
+
+    int arrSize = sizeof(lineArray)/sizeof(lineArray[0]);
+
+   for(int i = 0;i < arrSize;){
+    //Loop through each module and add to threshold array
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("In loop %d", i);
+    cal.Threshold[i] = cal.calibration(lineArray[i], i);
+    i++;
+   }
+
+    Brain.Screen.clearScreen();
+    Brain.Screen.print("CALIBRATION COMPLETED");
+
+    //Save to file the treshold array
+    SDCARD sd(cal);
+  }else{
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("FILE ALREADY EXISTS");
+  }
+
+  //Brain.Screen.print("Deleted calibration class");
 
   //Learn how to move a motorgroup
 
@@ -71,5 +110,7 @@ int main() {
   }
   */
   // Note : above threshold means dark, and below means light
-  
+
+  //Exit program
+  return 0;
 }

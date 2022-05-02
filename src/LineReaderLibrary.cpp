@@ -1,11 +1,26 @@
 #include "LineReaderLibrary.h"
 #include "vex.h"
+#include "string"
 
+using namespace std;
 using namespace ReadLine;
 using namespace vex;
 
-//Class declaration
-LineReadCalibration cal;
+bool setVariable;
+
+controller Controller;
+competition Competition;
+
+void userControl(void){
+  while(1){
+    if(Controller.ButtonA.pressing()){
+      setVariable = true; 
+      Brain.Screen.print("BUTTON");
+      wait(5, msec);
+      Brain.Screen.clearScreen();
+    }
+  }
+}
 
 int LineRead::LateUpdate(void){
   while(1){
@@ -30,7 +45,7 @@ int LineRead::LateUpdate(void){
   return 0;
 }
 
-bool LineReadCalibration::moduleDetectionInverted(line module, int thresh){
+bool LineRead::moduleDetectionInverted(line module, int thresh){
 
   //Used to detect line reader value on inverted surfaces
 
@@ -43,7 +58,7 @@ bool LineReadCalibration::moduleDetectionInverted(line module, int thresh){
   }
 }
 
-bool LineReadCalibration::moduleDetection(line module, int thresh){
+bool LineRead::moduleDetection(line module, int thresh){
 
   //Used to detect line reader value
 
@@ -65,9 +80,9 @@ int LineRead::Update(line module1, line module2, line module3){
     float tr2 = 53;
     float tr3 = 61;
 
-    bool line1 = cal.moduleDetection(module1, tr1);
-    bool line2 = cal.moduleDetection(module2, tr2);
-    bool line3 = cal.moduleDetection(module3, tr3);
+    bool line1 = moduleDetection(module1, tr1);
+    bool line2 = moduleDetection(module2, tr2);
+    bool line3 = moduleDetection(module3, tr3);
     /*
     bool line1Inv = moduleDetectionInverted(module1, Threshold);
     bool line2Inv = moduleDetectionInverted(module2, Threshold);
@@ -83,20 +98,20 @@ int LineRead::Update(line module1, line module2, line module3){
 
     if(line1 && line2 && line3){
       Brain.Screen.print("Center");
-      Motor1.spin(forward, 2, pct);
-      Motor10.spin(forward, 2, pct);
+      Motor1.spin(vex::forward, 2, pct);
+      Motor10.spin(vex::forward, 2, pct);
       break;
     }else{
       if(line1 && line2 && !line3){
         Brain.Screen.print("Left");
-        Motor1.spin(forward, 2, pct);
-        Motor10.spin(forward, 1, pct);
+        Motor1.spin(vex::forward, 2, pct);
+        Motor10.spin(vex::forward, 1, pct);
         wait(10, msec);
         break;
       }else if(!line1 && line2 && line3){
         Brain.Screen.print("Right");
-        Motor1.spin(forward, 1, pct);
-        Motor10.spin(forward, 2, pct);
+        Motor1.spin(vex::forward, 1, pct);
+        Motor10.spin(vex::forward, 2, pct);
         wait(10, msec);
         break;
         }
@@ -113,25 +128,30 @@ int LineRead::Update(line module1, line module2, line module3){
   return 1;
 }
 
-void LineReadCalibration::calibration(line module){
+int LineReadCalibration::calibration(line module, int i){
 
-  bool setVariable = true;
+  setVariable = false;
   bool isCaliLight = true;
   bool loopCali = true;
 
   float DarkThreshold = 0;
   float LightThreshold = 0;
 
+  float tr;
+
   wait(2, sec);
   
+  Competition.drivercontrol(userControl);
+
   while(loopCali == true){
     //Updating every 25 millisecond
 
-    wait(300, msec);
+    wait(250, msec);
 
     //Clear screen to make room for other responses and remove the already acknowledged values
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("Module detection value is %d and in loop %d", module.value(analogUnits::pct), i);
 
     if(setVariable == true && isCaliLight == true){
       Brain.Screen.clearScreen();
@@ -140,12 +160,14 @@ void LineReadCalibration::calibration(line module){
       setVariable = false;
       isCaliLight = false;
 
+      Brain.Screen.setCursor(1, 1);
       Brain.Screen.print("Light set and light val is %4f", LightThreshold);
-      wait(100, msec);
+      wait(3, sec);
     }else if(setVariable == true && isCaliLight == false){
-      //Brain.Screen.clearScreen();
+      Brain.Screen.clearScreen();
       DarkThreshold = module.value(analogUnits::pct);
 
+      Brain.Screen.setCursor(1, 1);
       Brain.Screen.print("Dark set and dark val is %4f", DarkThreshold);
 
       wait(2, sec);
@@ -158,25 +180,63 @@ void LineReadCalibration::calibration(line module){
 
   if(loopCali == false){
     Brain.Screen.setCursor(1, 1);
-    //Threshold = (LightThreshold + DarkThreshold) / 2;
-    Brain.Screen.print("Threshold is %4f", Threshold);
+    tr = (LightThreshold + DarkThreshold) / 2;
+    Brain.Screen.print("Threshold is %4f", tr);
     wait(1.8f, sec);
+    return tr;
   }
+
+  return 0;
 }
 
 //SD card constructor which can be created to initialize or do something while the object exists
-SDCARD::SDCARD(){
+SDCARD::SDCARD(LineReadCalibration cal){
   //Init the file or load the file if it exists
 
   //[]Search for the file first and if not make a new one
   if(Brain.SDcard.isInserted()){
+
+    ReadDATAFILE.open("SAVE.txt", std::ios::in);
+
     if(ReadDATAFILE.is_open()){
+      Brain.Screen.newLine();
+      //Brain.Screen.print("Save file exists and is already open");
+      //Read file and set each line to the calibration threshold array
+
+      int arrSize = sizeof(tmpTreshold)/sizeof(tmpTreshold[0]);
+
+      int thrVal;
+      string readVal;
+
+      for(int x = 0; x < arrSize;){
+        
+        getline(ReadDATAFILE, readVal);
+
+        istringstream iss(readVal);
+
+        if(iss >> thrVal){
+          cal.Threshold[x] = thrVal;
+          Brain.Screen.print(cal.Threshold[x]);
+          x++;
+        }
+      }
+
+      //ReadDATAFILE.getline(tmp, 30);
+
+      //Brain.Screen.newLine();
+     // Brain.Screen.print("Reading from file: %s ", tmp);
 
     }else{
-      
+      Brain.Screen.print("Save file doesn't exist making");
+      //Init file
+      WriteDATAFILE.open("SAVE.txt", std::ios::out);
+
+      WriteDATAFILE.close();
+
+      //get threshold array set to Line calirabtion threshold array
+      translate(cal);
     }
   }else{
-    Brain.Screen.clearScreen();
     Brain.Screen.print("ERROR: no SD Card inserted");
   }
   //[]Store the values of the thresholds
@@ -188,16 +248,27 @@ SDCARD::SDCARD(){
 SDCARD::~SDCARD(){
   //Save the file
   if(Brain.SDcard.isInserted()){
-    Brain.Screen.print("SD card inserted");
+    //Save file if read is not available
+    if(!ReadDATAFILE.is_open()){
+      Brain.Screen.newLine();
+      Brain.Screen.print("Saving file");
 
-    char Name[25] = "C++ rules";
+      WriteDATAFILE.open("SAVE.txt", std::ios::out);
 
-    WriteDATAFILE.open("SAVE.txt", std::ios::out);
+      //get the threshold array from the SD card class and put into file
 
-    WriteDATAFILE << Name;
+      int arrSize = sizeof(tmpTreshold)/sizeof(tmpTreshold[0]);
 
-    WriteDATAFILE.close();
+      for(int x = 0; x < arrSize;){
+        WriteDATAFILE << tmpTreshold[x] << endl;
+        x++;
+      }
 
+      WriteDATAFILE.close();
+
+      Brain.Screen.newLine();
+      Brain.Screen.print("FILE SAVED");
+    }
   }else{
     Brain.Screen.print("ERROR: no SD Card inserted");
   }
@@ -208,11 +279,21 @@ SDCARD::~SDCARD(){
   //[] call the translate function to set the Threshold
 }
 
-int SDCARD::translate(){
+void SDCARD::translate(LineReadCalibration cal){
 
   //Translate the txt file to code and set the values to the threshold array on the LineReadCalibration class
 
   //set a error code for when the read can't find the existance of the txt file
 
-  return 0;
+  int calArray = sizeof(cal.Threshold)/sizeof(cal.Threshold[0]);
+
+  for(int i = 0; i < calArray;){
+    tmpTreshold[i] = cal.Threshold[i];
+    i++;
+  }
+
+  //Message for debug
+  Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1, 1);
+  Brain.Screen.print("Translate complete");
 }
