@@ -22,29 +22,6 @@ void userControl(void){
   }
 }
 
-int LineRead::LateUpdate(void){
-  while(1){
-    /*
-    int temp = 1;
-    wait(50, msec);
-    if(moduleDetection(LineTrackerC, Threshold) == false && moduleDetection(LineTrackerD, Threshold) == false && moduleDetection(LineTrackerE, Threshold) == false){
-      //Stop
-      Brain.Screen.setCursor(temp, 1);
-      Brain.Screen.print("STOPPED");
-      Motor1.stop();
-      Motor10.stop();
-    }
-
-    temp += 1;
-
-    wait(1, sec);
-    Brain.Screen.clearScreen();
-    */
-  }
-
-  return 0;
-}
-
 bool LineRead::moduleDetectionInverted(line module, int thresh){
 
   //Used to detect line reader value on inverted surfaces
@@ -72,10 +49,12 @@ bool LineRead::moduleDetection(line module, int thresh){
 }
 
 int LineRead::Update(line module1, line module2, line module3){
-  
+
+/*
   while(1){
     //Note: The Calibration function can be used to find the value on a surface
 
+  
     float tr1 = 55;
     float tr2 = 53;
     float tr3 = 61;
@@ -83,11 +62,11 @@ int LineRead::Update(line module1, line module2, line module3){
     bool line1 = moduleDetection(module1, tr1);
     bool line2 = moduleDetection(module2, tr2);
     bool line3 = moduleDetection(module3, tr3);
-    /*
+    
     bool line1Inv = moduleDetectionInverted(module1, Threshold);
     bool line2Inv = moduleDetectionInverted(module2, Threshold);
     bool line3Inv = moduleDetectionInverted(module3, Threshold);
-    */
+    
     //DEBUG MODE
     int temp = 1;
     
@@ -124,7 +103,7 @@ int LineRead::Update(line module1, line module2, line module3){
     //Update every 1 millisecond per frames
     Brain.Screen.clearScreen();
   }
-
+*/
   return 1;
 }
 
@@ -217,6 +196,8 @@ SDCARD::SDCARD(LineReadCalibration cal){
         if(iss >> thrVal){
           cal.Threshold[x] = thrVal;
           Brain.Screen.print(cal.Threshold[x]);
+          Brain.Screen.setCursor(1, 1);
+          Brain.Screen.newLine();
           x++;
         }
       }

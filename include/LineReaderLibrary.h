@@ -24,7 +24,7 @@ namespace ReadLine{
 
   class LineRead{
     public:
-      int LateUpdate(void); //Used to update function and variables very late and will be run seperately but parallel to other loops
+      //int LateUpdate(void); //Used to update function and variables very late and will be run seperately but parallel to other loops
       int Update(line module1, line module2, line module3); //Used to update functions and variables
 
       //---------------------------------------------
