@@ -182,10 +182,28 @@ SDCARD::SDCARD(LineReadCalibration cal){
       //Brain.Screen.print("Save file exists and is already open");
       //Read file and set each line to the calibration threshold array
 
+      Brain.Screen.print("Press B for overwrite and X to read current file");
+
+      if(overwriteOption()){
+        //Go to constructor
+        Brain.Screen.print("Overwriting file");
+        wait(5, msec);
+        Brain.Screen.clearScreen();
+        Brain.Screen.setCursor(1, 1);
+        ReadDATAFILE.close();
+      }
+
+      Brain.Screen.clearScreen();
+      Brain.Screen.setCursor(1, 1);
+      Brain.Screen.print("Opening file");
+
       int arrSize = sizeof(tmpTreshold)/sizeof(tmpTreshold[0]);
 
       int thrVal;
       string readVal;
+
+      wait(5, msec);
+      Brain.Screen.clearScreen();
 
       for(int x = 0; x < arrSize;){
         
@@ -288,4 +306,17 @@ void SDCARD::translateToFile(LineReadCalibration cal){
   Brain.Screen.clearScreen();
   Brain.Screen.setCursor(1, 1);
   Brain.Screen.print("Translate complete");
+}
+
+bool SDCARD::overwriteOption(){
+  while(1){
+    if(Controller.ButtonB.pressing()){
+      // Button B for yes to overwrite
+      return true;
+    }else if(Controller.ButtonX.pressing()){
+      // Button X for no to overwrite
+      break;
+    }
+  }
+  return false;
 }

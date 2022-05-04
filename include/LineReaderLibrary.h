@@ -43,6 +43,8 @@ namespace ReadLine{
       SDCARD(LineReadCalibration cal); //Load file
       ~SDCARD(); //Save file
 
+      bool overwriteOption();
+
       void translateToFile(LineReadCalibration cali); //Read File and return a value
       void translateToProgram();
   };
