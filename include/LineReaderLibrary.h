@@ -19,6 +19,9 @@ namespace ReadLine{
       // Make values or variables
       float Threshold[3];
 
+      bool toOverwrite;
+      bool overwriteOption();
+
       int calibration(line module, int i); //Function to do calibration of the line reader
   };
 
@@ -42,8 +45,6 @@ namespace ReadLine{
 
       SDCARD(LineReadCalibration cal); //Load file
       ~SDCARD(); //Save file
-
-      bool overwriteOption();
 
       void translateToFile(LineReadCalibration cali); //Read File and return a value
       void translateToProgram();

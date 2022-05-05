@@ -45,8 +45,13 @@ int main() {
 
   if(DATAFILE.is_open()){
     Brain.Screen.print("Save file found");
-    tmpB = false;
-    SDCARD sd(cal);
+    if(cal.overwriteOption()){
+      tmpB = true;
+      cal.toOverwrite = false;
+    }else{
+      tmpB = false;
+      cal.toOverwrite = true;
+    }
   }else{
     Brain.Screen.print("No save file");
     tmpB = true;
@@ -57,7 +62,7 @@ int main() {
   //Close the file to check for
   //Note: The file opened is not saved is only checked to see if it exists
   DATAFILE.close();
-  
+
   wait(4, sec);
 
   Brain.Screen.clearScreen();
@@ -83,12 +88,14 @@ int main() {
     //Save to file the treshold array
     SDCARD sd(cal);
   }else{
+    SDCARD sd(cal);
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
     Brain.Screen.print("FILE ALREADY EXISTS");
   }
 
-  //Brain.Screen.print("Deleted calibration class");
+  Brain.Screen.newLine();
+  Brain.Screen.print("FILE check done bruv");
 
   //Learn how to move a motorgroup
 

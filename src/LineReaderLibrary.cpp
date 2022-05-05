@@ -137,11 +137,13 @@ int LineReadCalibration::calibration(line module, int i){
       LightThreshold = module.value(analogUnits::pct);
 
       setVariable = false;
-      isCaliLight = false;
 
       Brain.Screen.setCursor(1, 1);
       Brain.Screen.print("Light set and light val is %4f", LightThreshold);
+
       wait(3, sec);
+
+      isCaliLight = false;
     }else if(setVariable == true && isCaliLight == false){
       Brain.Screen.clearScreen();
       DarkThreshold = module.value(analogUnits::pct);
@@ -177,33 +179,23 @@ SDCARD::SDCARD(LineReadCalibration cal){
 
     ReadDATAFILE.open("SAVE.txt", std::ios::in);
 
-    if(ReadDATAFILE.is_open()){
+    if(ReadDATAFILE.is_open() && !cal.toOverwrite){
       Brain.Screen.newLine();
       //Brain.Screen.print("Save file exists and is already open");
       //Read file and set each line to the calibration threshold array
-
-      Brain.Screen.print("Press B for overwrite and X to read current file");
-
-      if(overwriteOption()){
-        //Go to constructor
-        Brain.Screen.print("Overwriting file");
-        wait(5, msec);
-        Brain.Screen.clearScreen();
-        Brain.Screen.setCursor(1, 1);
-        ReadDATAFILE.close();
-      }
-
+      
       Brain.Screen.clearScreen();
       Brain.Screen.setCursor(1, 1);
       Brain.Screen.print("Opening file");
+
+      wait(3, sec);
 
       int arrSize = sizeof(tmpTreshold)/sizeof(tmpTreshold[0]);
 
       int thrVal;
       string readVal;
-
-      wait(5, msec);
       Brain.Screen.clearScreen();
+      Brain.Screen.setCursor(1, 1);
 
       for(int x = 0; x < arrSize;){
         
@@ -214,12 +206,12 @@ SDCARD::SDCARD(LineReadCalibration cal){
         if(iss >> thrVal){
           cal.Threshold[x] = thrVal;
           Brain.Screen.print(cal.Threshold[x]);
-          Brain.Screen.setCursor(1, 1);
           Brain.Screen.newLine();
           x++;
         }
       }
 
+      wait(5, sec);
       //ReadDATAFILE.getline(tmp, 30);
 
       //Brain.Screen.newLine();
@@ -308,7 +300,11 @@ void SDCARD::translateToFile(LineReadCalibration cal){
   Brain.Screen.print("Translate complete");
 }
 
-bool SDCARD::overwriteOption(){
+bool LineReadCalibration::overwriteOption(){
+
+  Brain.Screen.newLine();
+  Brain.Screen.print("Press B for overwrite and X to read current file");
+
   while(1){
     if(Controller.ButtonB.pressing()){
       // Button B for yes to overwrite
