@@ -188,28 +188,7 @@ SDCARD::SDCARD(LineReadCalibration cal){
       Brain.Screen.setCursor(1, 1);
       Brain.Screen.print("Opening file");
 
-      wait(3, sec);
-
-      int arrSize = sizeof(tmpTreshold)/sizeof(tmpTreshold[0]);
-
-      int thrVal;
-      string readVal;
-      Brain.Screen.clearScreen();
-      Brain.Screen.setCursor(1, 1);
-
-      for(int x = 0; x < arrSize;){
-        
-        getline(ReadDATAFILE, readVal);
-
-        istringstream iss(readVal);
-
-        if(iss >> thrVal){
-          cal.Threshold[x] = thrVal;
-          Brain.Screen.print(cal.Threshold[x]);
-          Brain.Screen.newLine();
-          x++;
-        }
-      }
+      wait(2, sec);
 
       wait(5, sec);
       //ReadDATAFILE.getline(tmp, 30);
@@ -221,8 +200,6 @@ SDCARD::SDCARD(LineReadCalibration cal){
       Brain.Screen.print("Save file doesn't exist making");
       //Init file
       WriteDATAFILE.open("SAVE.txt", std::ios::out);
-
-      WriteDATAFILE.close();
 
       //get threshold array set to Line calirabtion threshold array
       translateToFile(cal);
@@ -244,28 +221,25 @@ SDCARD::~SDCARD(){
       Brain.Screen.newLine();
       Brain.Screen.print("Saving file");
 
-      WriteDATAFILE.open("SAVE.txt", std::ios::out);
-
       //get the threshold array from the SD card class and put into file
 
-      int arrSize = sizeof(tmpTreshold)/sizeof(tmpTreshold[0]);
-
-      for(int x = 0; x < arrSize;){
-        WriteDATAFILE << tmpTreshold[x] << endl;
+      for(int x = 0; x < 3;){
+        WriteDATAFILE << tmpThreshold[x] << endl;
         x++;
       }
       
       //Check for each value in the file
 
+      wait(2, sec);
       //debug
       Brain.Screen.clearScreen();
       Brain.Screen.setCursor(1, 1);
-      for(int x = 0; x < arrSize;){
-        Brain.Screen.print(tmpTreshold[x]);
+      for(int x = 0; x < 3;){
+        Brain.Screen.print(tmpThreshold[x]);
         Brain.Screen.newLine();
         x++;
       }
-
+      
       WriteDATAFILE.close();
 
       Brain.Screen.newLine();
@@ -281,16 +255,45 @@ SDCARD::~SDCARD(){
   //[] call the translate function to set the Threshold
 }
 
+void SDCARD::translateToProgram(LineReadCalibration cal){
+  if(ReadDATAFILE.is_open()){
+    Brain.Screen.newLine();
+    Brain.Screen.print("Reading file...");
+
+    int val;
+    string readVal;
+
+    for(int i = 0; i < 3;){
+      getline(ReadDATAFILE, readVal);
+
+      istringstream iss(readVal);
+
+      if(iss >> val){
+        tmpThreshold[i] = val;
+        i++;
+      }
+    }
+
+    for(int i = 0; i < 3;){
+      cal.Threshold[i] = tmpThreshold[i];
+      Brain.Screen.print(cal.Threshold[i]);
+      i++;
+    }
+
+  }else{
+    Brain.Screen.clearScreen();
+    Brain.Screen.print("ERROR: FILE doesn't exist");
+  }
+}
+
 void SDCARD::translateToFile(LineReadCalibration cal){
 
   //Translate the txt file to code and set the values to the threshold array on the LineReadCalibration class
 
   //set a error code for when the read can't find the existance of the txt file
 
-  int calArray = sizeof(cal.Threshold)/sizeof(cal.Threshold[0]);
-
-  for(int i = 0; i < calArray;){
-    tmpTreshold[i] = cal.Threshold[i];
+  for(int i = 0; i < 3;){
+    tmpThreshold[i] = cal.Threshold[i];
     i++;
   }
 

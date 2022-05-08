@@ -37,7 +37,8 @@ void pre_auton(void){
 
 int main() {
   //Initialize
-
+  pre_auton();
+  
   bool tmpB = false;
 
   ifstream DATAFILE;
@@ -56,14 +57,11 @@ int main() {
     Brain.Screen.print("No save file");
     tmpB = true;
   }
-
-  pre_auton();
-
   //Close the file to check for
   //Note: The file opened is not saved is only checked to see if it exists
   DATAFILE.close();
 
-  wait(4, sec);
+  wait(2, sec);
 
   Brain.Screen.clearScreen();
 

@@ -41,12 +41,12 @@ namespace ReadLine{
       std::ifstream ReadDATAFILE;
       std::ofstream WriteDATAFILE;
 
-      float tmpTreshold[3];
+      float tmpThreshold[3];
 
       SDCARD(LineReadCalibration cal); //Load file
       ~SDCARD(); //Save file
 
       void translateToFile(LineReadCalibration cali); //Read File and return a value
-      void translateToProgram();
+      void translateToProgram(LineReadCalibration calib);
   };
 };
