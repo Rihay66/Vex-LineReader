@@ -90,6 +90,14 @@ int LineRead::Update(line module1, line module2, line module3, float *thresholdA
         }
     }
 
+    if(!line1 && !line2 && !line3){
+      Brain.Screen.print("STOPPED");
+      Motor1.stop();
+      Motor10.stop();
+      wait(10 , msec);
+      break;
+    }
+
     Brain.Screen.setCursor(temp, 1);
 
     temp += 1;

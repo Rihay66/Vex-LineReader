@@ -31,7 +31,6 @@ LineRead read;
 LineReadCalibration* cal;
 
 bool press;
-line *lineArray = new line[3] {LineTrackerA, LineTrackerC, LineTrackerB};
 
 void pre_auton(void){
   vexcodeInit();
@@ -46,7 +45,8 @@ void saveFile(LineReadCalibration* cal, bool toOverwrite, float *thresholdArr[3]
 int main() {
   //Initialize
   pre_auton();
-  
+  line *lineArray = new line[3] {LineTrackerA, LineTrackerC, LineTrackerB};
+
   bool tmpB = false;
 
   ifstream DATAFILE;
@@ -120,7 +120,7 @@ int main() {
   //            right         center        left
 
   while(1){
-    read.Update(lineArray[0], lineArray[1], lineArray[2], tmpArray);
+    read.Update(lineArray[2], lineArray[1], lineArray[0], tmpArray);
   }
   
   // Note : above threshold means dark, and below means light
