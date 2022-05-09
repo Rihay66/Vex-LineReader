@@ -22,11 +22,13 @@ void userControl(void){
   }
 }
 
-bool LineRead::moduleDetectionInverted(line module, int thresh){
+bool LineRead::moduleDetectionInverted(line module, float* thresh){
 
   //Used to detect line reader value on inverted surfaces
 
-  if(module.value(analogUnits::pct) < thresh){
+  float* ptr = new float[module.value(analogUnits::pct)];
+
+  if(ptr < thresh){
     //Dark surface detection
     return true;
   }else{
@@ -35,11 +37,13 @@ bool LineRead::moduleDetectionInverted(line module, int thresh){
   }
 }
 
-bool LineRead::moduleDetection(line module, int thresh){
+bool LineRead::moduleDetection(line module, float* thresh){
 
   //Used to detect line reader value
 
-  if(module.value(analogUnits::pct) > thresh){
+  float* ptr = new float[module.value(analogUnits::pct)];
+
+  if(ptr > thresh){
       //Dark detection
       return true;
   }else{
@@ -48,24 +52,14 @@ bool LineRead::moduleDetection(line module, int thresh){
   }
 }
 
-int LineRead::Update(line module1, line module2, line module3){
+int LineRead::Update(line module1, line module2, line module3, float *thresholdArr[3]){
 
-/*
   while(1){
     //Note: The Calibration function can be used to find the value on a surface
 
-  
-    float tr1 = 55;
-    float tr2 = 53;
-    float tr3 = 61;
-
-    bool line1 = moduleDetection(module1, tr1);
-    bool line2 = moduleDetection(module2, tr2);
-    bool line3 = moduleDetection(module3, tr3);
-    
-    bool line1Inv = moduleDetectionInverted(module1, Threshold);
-    bool line2Inv = moduleDetectionInverted(module2, Threshold);
-    bool line3Inv = moduleDetectionInverted(module3, Threshold);
+    bool line1 = moduleDetection(module1, thresholdArr[0]);
+    bool line2 = moduleDetection(module2, thresholdArr[1]);
+    bool line3 = moduleDetection(module3, thresholdArr[2]);
     
     //DEBUG MODE
     int temp = 1;
@@ -103,11 +97,11 @@ int LineRead::Update(line module1, line module2, line module3){
     //Update every 1 millisecond per frames
     Brain.Screen.clearScreen();
   }
-*/
+
   return 1;
 }
 
-int LineReadCalibration::calibration(line module, int i){
+float* LineReadCalibration::calibration(line module, int i){
 
   setVariable = false;
   bool isCaliLight = true;
@@ -117,6 +111,7 @@ int LineReadCalibration::calibration(line module, int i){
   float LightThreshold = 0;
 
   float tr;
+  float* ptr = new float;
 
   wait(2, sec);
   
@@ -146,6 +141,7 @@ int LineReadCalibration::calibration(line module, int i){
       isCaliLight = false;
     }else if(setVariable == true && isCaliLight == false){
       Brain.Screen.clearScreen();
+      setVariable = false;
       DarkThreshold = module.value(analogUnits::pct);
 
       Brain.Screen.setCursor(1, 1);
@@ -153,7 +149,6 @@ int LineReadCalibration::calibration(line module, int i){
 
       wait(2, sec);
       Brain.Screen.clearScreen();
-      setVariable = false;
       loopCali = false;
     }
     wait(1, sec);
@@ -164,14 +159,16 @@ int LineReadCalibration::calibration(line module, int i){
     tr = (LightThreshold + DarkThreshold) / 2;
     Brain.Screen.print("Threshold is %4f", tr);
     wait(1.8f, sec);
-    return tr;
+    *ptr = tr;
+
+    return ptr;
   }
 
   return 0;
 }
 
 //SD card constructor which can be created to initialize or do something while the object exists
-SDCARD::SDCARD(LineReadCalibration cal){
+SDCARD::SDCARD(bool toOverwrite, float *arr[3], LineReadCalibration* cal){
   //Init the file or load the file if it exists
 
   //[]Search for the file first and if not make a new one
@@ -179,7 +176,7 @@ SDCARD::SDCARD(LineReadCalibration cal){
 
     ReadDATAFILE.open("SAVE.txt", std::ios::in);
 
-    if(ReadDATAFILE.is_open() && !cal.toOverwrite){
+    if(ReadDATAFILE.is_open() && !toOverwrite){
       Brain.Screen.newLine();
       //Brain.Screen.print("Save file exists and is already open");
       //Read file and set each line to the calibration threshold array
@@ -190,19 +187,19 @@ SDCARD::SDCARD(LineReadCalibration cal){
 
       wait(2, sec);
 
+      translateToProgram(cal);
+
       wait(5, sec);
-      //ReadDATAFILE.getline(tmp, 30);
 
-      //Brain.Screen.newLine();
-     // Brain.Screen.print("Reading from file: %s ", tmp);
+    }else if(!ReadDATAFILE.is_open() || toOverwrite){
+      Brain.Screen.print("Save file doesn't exist");
+      wait(2, sec);
 
-    }else{
-      Brain.Screen.print("Save file doesn't exist making");
       //Init file
       WriteDATAFILE.open("SAVE.txt", std::ios::out);
 
       //get threshold array set to Line calirabtion threshold array
-      translateToFile(cal);
+      translateToFile(arr);
     }
   }else{
     Brain.Screen.print("ERROR: no SD Card inserted");
@@ -217,7 +214,7 @@ SDCARD::~SDCARD(){
   //Save the file
   if(Brain.SDcard.isInserted()){
     //Save file if read is not available
-    if(!ReadDATAFILE.is_open()){
+    if(!ReadDATAFILE.is_open() || WriteDATAFILE.is_open()){
       Brain.Screen.newLine();
       Brain.Screen.print("Saving file");
 
@@ -232,10 +229,14 @@ SDCARD::~SDCARD(){
 
       wait(2, sec);
       //debug
+
       Brain.Screen.clearScreen();
       Brain.Screen.setCursor(1, 1);
       for(int x = 0; x < 3;){
-        Brain.Screen.print(tmpThreshold[x]);
+
+        uintptr_t num = (uintptr_t)tmpThreshold[x];
+
+        Brain.Screen.print(num);
         Brain.Screen.newLine();
         x++;
       }
@@ -248,19 +249,16 @@ SDCARD::~SDCARD(){
   }else{
     Brain.Screen.print("ERROR: no SD Card inserted");
   }
-  //[] Find the file
-
-  //[] Read and display what it contains
-
-  //[] call the translate function to set the Threshold
 }
 
-void SDCARD::translateToProgram(LineReadCalibration cal){
+void SDCARD::translateToProgram(LineReadCalibration* cal){
   if(ReadDATAFILE.is_open()){
     Brain.Screen.newLine();
     Brain.Screen.print("Reading file...");
+    Brain.Screen.newLine();
 
-    int val;
+    float* ptr;
+    float val;
     string readVal;
 
     for(int i = 0; i < 3;){
@@ -269,14 +267,20 @@ void SDCARD::translateToProgram(LineReadCalibration cal){
       istringstream iss(readVal);
 
       if(iss >> val){
-        tmpThreshold[i] = val;
+        ptr = new float;
+        *ptr = val;
+        tmpThreshold[i] = ptr;
         i++;
       }
     }
 
+    delete ptr;
+
     for(int i = 0; i < 3;){
-      cal.Threshold[i] = tmpThreshold[i];
-      Brain.Screen.print(cal.Threshold[i]);
+      cal->Threshold[i] = tmpThreshold[i];
+      uintptr_t num = (uintptr_t)cal->Threshold[i];
+      Brain.Screen.print(num);
+      Brain.Screen.newLine();
       i++;
     }
 
@@ -286,14 +290,14 @@ void SDCARD::translateToProgram(LineReadCalibration cal){
   }
 }
 
-void SDCARD::translateToFile(LineReadCalibration cal){
+void SDCARD::translateToFile(float *arr[3]){
 
   //Translate the txt file to code and set the values to the threshold array on the LineReadCalibration class
 
   //set a error code for when the read can't find the existance of the txt file
 
   for(int i = 0; i < 3;){
-    tmpThreshold[i] = cal.Threshold[i];
+    tmpThreshold[i] = arr[i];
     i++;
   }
 

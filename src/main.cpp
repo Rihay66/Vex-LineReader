@@ -19,6 +19,7 @@
 #include "vex.h"
 #include "LineReaderLibrary.h"
 #include "iostream"
+#include "stdio.h"
 #include "memory"
 #include "stdexcept"
 
@@ -27,12 +28,19 @@ using namespace ReadLine;
 using namespace vex;
 
 LineRead read;
-LineReadCalibration cal;
+LineReadCalibration* cal;
 
 bool press;
+line *lineArray = new line[3] {LineTrackerA, LineTrackerC, LineTrackerB};
 
 void pre_auton(void){
   vexcodeInit();
+}
+
+void saveFile(LineReadCalibration* cal, bool toOverwrite, float *thresholdArr[3]){
+  SDCARD* ptr = new SDCARD(toOverwrite, thresholdArr, cal);
+  wait(2, sec);
+  delete ptr;
 }
 
 int main() {
@@ -46,12 +54,12 @@ int main() {
 
   if(DATAFILE.is_open()){
     Brain.Screen.print("Save file found");
-    if(cal.overwriteOption()){
+    if(cal->overwriteOption()){
       tmpB = true;
-      cal.toOverwrite = false;
+      cal->toOverwrite = true;
     }else{
       tmpB = false;
-      cal.toOverwrite = true;
+      cal->toOverwrite = false;
     }
   }else{
     Brain.Screen.print("No save file");
@@ -67,26 +75,28 @@ int main() {
 
   if(tmpB == true){
     //Init the line array for the connected line trackersb
-    line lineArray[] = {LineTrackerA, LineTrackerC, LineTrackerB};
 
-    int arrSize = sizeof(lineArray)/sizeof(lineArray[0]);
-
-   for(int i = 0;i < arrSize;){
+   for(int i = 0;i < 3;){
     //Loop through each module and add to threshold array
+
+    int x = i + 1;
+
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print("In loop %d", i);
-    cal.Threshold[i] = cal.calibration(lineArray[i], i);
+    Brain.Screen.print("In loop %d", x);
+    cal->Threshold[i] = cal->calibration(lineArray[i], i);
     i++;
    }
 
     Brain.Screen.clearScreen();
     Brain.Screen.print("CALIBRATION COMPLETED");
 
+    wait(2, sec);
+
     //Save to file the treshold array
-    SDCARD sd(cal);
+    saveFile(cal, cal->toOverwrite, cal->Threshold);
   }else{
-    SDCARD sd(cal);
+    saveFile(cal, cal->toOverwrite, cal->Threshold);
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
     Brain.Screen.print("FILE ALREADY EXISTS");
@@ -94,26 +104,25 @@ int main() {
 
   Brain.Screen.newLine();
   Brain.Screen.print("FILE check done bruv");
+  
+  //Free memory
+  float *tmpArray[3] = {cal->Threshold[0], cal->Threshold[1], cal->Threshold[2]};
+  
+  delete cal;
+
+  wait(4, sec);
+
+  //[] Set the cal threshold to the sd card tmpThreshold
 
   //Learn how to move a motorgroup
 
-  //Brain.Screen.print("Calibrating");
-
-  //Update to until Threshold is found
-  /*
-  while(module.Threshold == 0)
-  { 
-    module.calibration(LineTrackerE);
-  }
-  */
-
   //Current ClawBot has a line reader config of CED
   //            right         center        left
-  /*
+
   while(1){
-    read.Update(LineTrackerB, LineTrackerC, LineTrackerA);
+    read.Update(lineArray[0], lineArray[1], lineArray[2], tmpArray);
   }
-  */
+  
   // Note : above threshold means dark, and below means light
 
   //Exit program
