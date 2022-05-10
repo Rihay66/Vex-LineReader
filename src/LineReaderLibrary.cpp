@@ -15,20 +15,17 @@ void userControl(void){
   while(1){
     if(Controller.ButtonA.pressing()){
       setVariable = true; 
-      Brain.Screen.print("BUTTON");
-      wait(5, msec);
-      Brain.Screen.clearScreen();
+    }else{
+      setVariable = false;
     }
   }
 }
 
-bool LineRead::moduleDetectionInverted(line module, float* thresh){
+bool LineRead::moduleDetectionInverted(line module, float thresh){
 
   //Used to detect line reader value on inverted surfaces
 
-  float* ptr = new float[module.value(analogUnits::pct)];
-
-  if(ptr < thresh){
+  if(module.value(analogUnits::pct) < thresh){
     //Dark surface detection
     return true;
   }else{
@@ -37,13 +34,11 @@ bool LineRead::moduleDetectionInverted(line module, float* thresh){
   }
 }
 
-bool LineRead::moduleDetection(line module, float* thresh){
+bool LineRead::moduleDetection(line module, float thresh){
 
   //Used to detect line reader value
 
-  float* ptr = new float[module.value(analogUnits::pct)];
-
-  if(ptr > thresh){
+  if(module.value(analogUnits::pct) > thresh){
       //Dark detection
       return true;
   }else{
@@ -52,7 +47,7 @@ bool LineRead::moduleDetection(line module, float* thresh){
   }
 }
 
-int LineRead::Update(line module1, line module2, line module3, float *thresholdArr[3]){
+int LineRead::Update(line module1, line module2, line module3, float thresholdArr[3]){
 
   while(1){
     //Note: The Calibration function can be used to find the value on a surface
@@ -66,9 +61,13 @@ int LineRead::Update(line module1, line module2, line module3, float *thresholdA
     
     //Testing the value of LineTrackerD
     Brain.Screen.print("%d %d %d ", line1, line2, line3);
+    Brain.Screen.newLine();
     Brain.Screen.print(" %d %d %d", module1.value(analogUnits::pct), module2.value(analogUnits::pct), module3.value(analogUnits::pct));
+    Brain.Screen.newLine();
+    Brain.Screen.print("%f %f %f", thresholdArr[0], thresholdArr[1], thresholdArr[2]);
     Brain.Screen.setCursor(temp, 1);
 
+    /*
     if(line1 && line2 && line3){
       Brain.Screen.print("Center");
       Motor1.spin(vex::forward, 2, pct);
@@ -97,11 +96,11 @@ int LineRead::Update(line module1, line module2, line module3, float *thresholdA
       wait(10 , msec);
       break;
     }
-
+    */
     Brain.Screen.setCursor(temp, 1);
 
     temp += 1;
-    wait(15, msec);
+    wait(25, msec);
     //Update every 1 millisecond per frames
     Brain.Screen.clearScreen();
   }
@@ -109,7 +108,7 @@ int LineRead::Update(line module1, line module2, line module3, float *thresholdA
   return 1;
 }
 
-float* LineReadCalibration::calibration(line module, int i){
+float LineReadCalibration::calibration(line module, int x){
 
   setVariable = false;
   bool isCaliLight = true;
@@ -119,7 +118,6 @@ float* LineReadCalibration::calibration(line module, int i){
   float LightThreshold = 0;
 
   float tr;
-  float* ptr = new float;
 
   wait(2, sec);
   
@@ -128,16 +126,14 @@ float* LineReadCalibration::calibration(line module, int i){
   while(loopCali == true){
     //Updating every 25 millisecond
 
-    wait(250, msec);
-
     //Clear screen to make room for other responses and remove the already acknowledged values
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print("Module detection value is %d and in loop %d", module.value(analogUnits::pct), i);
+    Brain.Screen.print("Module detection value is %d and in loop %d", module.value(analogUnits::pct), x);
 
     if(setVariable == true && isCaliLight == true){
       Brain.Screen.clearScreen();
-      LightThreshold = module.value(analogUnits::pct);
+      LightThreshold = module.value(percentUnits::pct);
 
       setVariable = false;
 
@@ -150,7 +146,7 @@ float* LineReadCalibration::calibration(line module, int i){
     }else if(setVariable == true && isCaliLight == false){
       Brain.Screen.clearScreen();
       setVariable = false;
-      DarkThreshold = module.value(analogUnits::pct);
+      DarkThreshold = module.value(percentUnits::pct);
 
       Brain.Screen.setCursor(1, 1);
       Brain.Screen.print("Dark set and dark val is %4f", DarkThreshold);
@@ -159,7 +155,7 @@ float* LineReadCalibration::calibration(line module, int i){
       Brain.Screen.clearScreen();
       loopCali = false;
     }
-    wait(1, sec);
+    wait(150, msec);
   }
 
   if(loopCali == false){
@@ -167,16 +163,15 @@ float* LineReadCalibration::calibration(line module, int i){
     tr = (LightThreshold + DarkThreshold) / 2;
     Brain.Screen.print("Threshold is %4f", tr);
     wait(1.8f, sec);
-    *ptr = tr;
 
-    return ptr;
+    return tr;
   }
 
   return 0;
 }
 
 //SD card constructor which can be created to initialize or do something while the object exists
-SDCARD::SDCARD(bool toOverwrite, float *arr[3], LineReadCalibration* cal){
+SDCARD::SDCARD(bool toOverwrite, float arr[3], LineReadCalibration* cal){
   //Init the file or load the file if it exists
 
   //[]Search for the file first and if not make a new one
@@ -265,7 +260,6 @@ void SDCARD::translateToProgram(LineReadCalibration* cal){
     Brain.Screen.print("Reading file...");
     Brain.Screen.newLine();
 
-    float* ptr;
     float val;
     string readVal;
 
@@ -275,14 +269,10 @@ void SDCARD::translateToProgram(LineReadCalibration* cal){
       istringstream iss(readVal);
 
       if(iss >> val){
-        ptr = new float;
-        *ptr = val;
-        tmpThreshold[i] = ptr;
+        tmpThreshold[i] = val;
         i++;
       }
     }
-
-    delete ptr;
 
     for(int i = 0; i < 3;){
       cal->Threshold[i] = tmpThreshold[i];
@@ -298,7 +288,7 @@ void SDCARD::translateToProgram(LineReadCalibration* cal){
   }
 }
 
-void SDCARD::translateToFile(float *arr[3]){
+void SDCARD::translateToFile(float arr[3]){
 
   //Translate the txt file to code and set the values to the threshold array on the LineReadCalibration class
 

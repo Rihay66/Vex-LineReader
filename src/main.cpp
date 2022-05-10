@@ -28,7 +28,6 @@ using namespace ReadLine;
 using namespace vex;
 
 LineRead read;
-LineReadCalibration* cal;
 
 bool press;
 
@@ -36,7 +35,7 @@ void pre_auton(void){
   vexcodeInit();
 }
 
-void saveFile(LineReadCalibration* cal, bool toOverwrite, float *thresholdArr[3]){
+void saveFile(LineReadCalibration* cal, bool toOverwrite, float thresholdArr[3]){
   SDCARD* ptr = new SDCARD(toOverwrite, thresholdArr, cal);
   wait(2, sec);
   delete ptr;
@@ -45,6 +44,7 @@ void saveFile(LineReadCalibration* cal, bool toOverwrite, float *thresholdArr[3]
 int main() {
   //Initialize
   pre_auton();
+  LineReadCalibration* cal = new LineReadCalibration;
   line *lineArray = new line[3] {LineTrackerA, LineTrackerC, LineTrackerB};
 
   bool tmpB = false;
@@ -84,7 +84,7 @@ int main() {
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
     Brain.Screen.print("In loop %d", x);
-    cal->Threshold[i] = cal->calibration(lineArray[i], i);
+    cal->Threshold[i] = cal->calibration(lineArray[i], x);
     i++;
    }
 
@@ -106,7 +106,7 @@ int main() {
   Brain.Screen.print("FILE check done bruv");
   
   //Free memory
-  float *tmpArray[3] = {cal->Threshold[0], cal->Threshold[1], cal->Threshold[2]};
+  float tmpArray[3] = {cal->Threshold[0], cal->Threshold[1], cal->Threshold[2]};
   
   delete cal;
 
