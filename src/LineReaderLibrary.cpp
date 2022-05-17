@@ -18,6 +18,8 @@ void LRH::Init(line* lineArray[3]){
   //Make a new file or read/overwrite file if it exists
   if(!fileExist){
     //File doesn't exist
+    
+
   }else{
     //File does exist
   }
