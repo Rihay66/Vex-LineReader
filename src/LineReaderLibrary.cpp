@@ -6,14 +6,43 @@ using namespace std;
 using namespace ReadLine;
 using namespace vex;
 
+//This type is only used locally in this script
 bool setVariable;
 
-controller Controller;
-competition Competition;
+void LRH::Init(line* lineArray[3]){
+  //Initialize
+  checkForFile();
+  LineReadCalibration* cal = new LineReadCalibration;
 
-void userControl(void){
+  //Depending on the result of file check it will either
+  //Make a new file or read/overwrite file if it exists
+  if(!fileExist){
+    //File doesn't exist
+  }else{
+    //File does exist
+  }
+}
+
+bool LRH::overwriteOption(){
+
+  Brain.Screen.newLine();
+  Brain.Screen.print("Press B for overwrite and X to read current file");
+
   while(1){
-    if(Controller.ButtonA.pressing()){
+    if(_controller.ButtonB.pressing()){
+      // Button B for yes to overwrite
+      return true;
+    }else if(_controller.ButtonX.pressing()){
+      // Button X for no to overwrite
+      break;
+    }
+  }
+  return false;
+}
+
+void LRH::userControl(void){
+  while(1){
+    if(_controller.ButtonA.pressing()){
       setVariable = true; 
     }else{
       setVariable = false;
@@ -39,76 +68,15 @@ bool LineRead::moduleDetection(line module, float thresh){
   //Used to detect line reader value
 
   if(module.value(analogUnits::pct) > thresh){
-      //Dark detection
-      return true;
+    //Dark detection
+    return true;
   }else{
     //Light detection
     return false;
   }
 }
 
-int LineRead::Update(line module1, line module2, line module3, float thresholdArr[3]){
-
-  while(1){
-    //Note: The Calibration function can be used to find the value on a surface
-
-    bool line1 = moduleDetection(module1, thresholdArr[0]);
-    bool line2 = moduleDetection(module2, thresholdArr[1]);
-    bool line3 = moduleDetection(module3, thresholdArr[2]);
-    
-    //DEBUG MODE
-    int temp = 1;
-    
-    //Testing the value of LineTrackerD
-    Brain.Screen.print("%d %d %d ", line1, line2, line3);
-    Brain.Screen.newLine();
-    Brain.Screen.print(" %d %d %d", module1.value(analogUnits::pct), module2.value(analogUnits::pct), module3.value(analogUnits::pct));
-    Brain.Screen.newLine();
-    Brain.Screen.print("%f %f %f", thresholdArr[0], thresholdArr[1], thresholdArr[2]);
-    Brain.Screen.setCursor(temp, 1);
-
-    /*
-    if(line1 && line2 && line3){
-      Brain.Screen.print("Center");
-      Motor1.spin(vex::forward, 2, pct);
-      Motor10.spin(vex::forward, 2, pct);
-      break;
-    }else{
-      if(line1 && line2 && !line3){
-        Brain.Screen.print("Left");
-        Motor1.spin(vex::forward, 2, pct);
-        Motor10.spin(vex::forward, 1, pct);
-        wait(10, msec);
-        break;
-      }else if(!line1 && line2 && line3){
-        Brain.Screen.print("Right");
-        Motor1.spin(vex::forward, 1, pct);
-        Motor10.spin(vex::forward, 2, pct);
-        wait(10, msec);
-        break;
-        }
-    }
-
-    if(!line1 && !line2 && !line3){
-      Brain.Screen.print("STOPPED");
-      Motor1.stop();
-      Motor10.stop();
-      wait(10 , msec);
-      break;
-    }
-    */
-    Brain.Screen.setCursor(temp, 1);
-
-    temp += 1;
-    wait(25, msec);
-    //Update every 1 millisecond per frames
-    Brain.Screen.clearScreen();
-  }
-
-  return 1;
-}
-
-float LineReadCalibration::calibration(line module, int x){
+float LineReadCalibration::calibration(line module, int x, LRH _lrh){
 
   setVariable = false;
   bool isCaliLight = true;
@@ -121,7 +89,7 @@ float LineReadCalibration::calibration(line module, int x){
 
   wait(2, sec);
   
-  Competition.drivercontrol(userControl);
+  _lrh._competition.drivercontrol(_lrh.userControl);
 
   while(loopCali == true){
     //Updating every 25 millisecond
@@ -303,21 +271,4 @@ void SDCARD::translateToFile(float arr[3]){
   Brain.Screen.clearScreen();
   Brain.Screen.setCursor(1, 1);
   Brain.Screen.print("Translate complete");
-}
-
-bool LineReadCalibration::overwriteOption(){
-
-  Brain.Screen.newLine();
-  Brain.Screen.print("Press B for overwrite and X to read current file");
-
-  while(1){
-    if(Controller.ButtonB.pressing()){
-      // Button B for yes to overwrite
-      return true;
-    }else if(Controller.ButtonX.pressing()){
-      // Button X for no to overwrite
-      break;
-    }
-  }
-  return false;
 }

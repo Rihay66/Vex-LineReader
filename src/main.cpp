@@ -56,10 +56,8 @@ int main() {
     Brain.Screen.print("Save file found");
     if(cal->overwriteOption()){
       tmpB = true;
-      cal->toOverwrite = true;
     }else{
       tmpB = false;
-      cal->toOverwrite = false;
     }
   }else{
     Brain.Screen.print("No save file");
