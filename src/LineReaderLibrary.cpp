@@ -1,29 +1,76 @@
 #include "LineReaderLibrary.h"
-#include "vex.h"
-#include "string"
 
-using namespace std;
-using namespace ReadLine;
-using namespace vex;
+using namespace ReadLineLibrary;
+
+//Create vex classes
+competition _competition;
+controller _controller;
 
 //This type is only used locally in this script
 bool setVariable;
 
-void LRH::Init(line* lineArray[3]){
+//Call sd card class to a specific function and this function is local
+void saveFile(LineReadCalibration* cal, bool toOverwrite, float thresholdArr[3]){
+  SDCARD* ptr = new SDCARD(toOverwrite, thresholdArr, cal);
+  wait(2, sec);
+  delete ptr;
+}
+
+int LRH::Init(line lineArray[3], LRH _lrh){
   //Initialize
-  checkForFile();
+  if(!checkForFile()){
+    return 1;
+  }
   LineReadCalibration* cal = new LineReadCalibration;
 
   //Depending on the result of file check it will either
   //Make a new file or read/overwrite file if it exists
   if(!fileExist){
     //File doesn't exist
-    
+    for(int i = 0; i < 3;){
+      int x = 1 + i;
+
+      Brain.Screen.clearScreen();
+      Brain.Screen.setCursor(1, 1);
+      Brain.Screen.print("In loop %d", x);
+      cal->Threshold[i] = cal->calibration(lineArray[i], x, _lrh);
+      i++;
+
+      Brain.Screen.clearScreen();
+      Brain.Screen.print("CALIBRATION COMPLETED");
+
+      wait(2, sec);
+
+      //Save to file the treshold array
+      saveFile(cal, cal->toOverwrite, cal->Threshold);
+    }
 
   }else{
     //File does exist
+    saveFile(cal, cal->toOverwrite, cal->Threshold);
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("FILE ALREADY EXISTS");
   }
+
+  Brain.Screen.newLine();
+  Brain.Screen.print("FILE check done");
+  
+  //Free memory
+  //float tmpArray[3] = {cal->Threshold[0], cal->Threshold[1], cal->Threshold[2]};
+  
+  delete cal;
+
+  wait(4, sec);
+
+  //Confirm class completion
+  Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1, 1);
+  Brain.Screen.print("Calibration system complete");
+
+  return 0;
 }
+
 
 bool LRH::overwriteOption(){
 
@@ -91,7 +138,7 @@ float LineReadCalibration::calibration(line module, int x, LRH _lrh){
 
   wait(2, sec);
   
-  _lrh._competition.drivercontrol(_lrh.userControl);
+  _competition.drivercontrol(_lrh.userControl);
 
   while(loopCali == true){
     //Updating every 25 millisecond
