@@ -17,7 +17,7 @@ namespace LineReadHeader{
 
       //Public array used for line threshold 
       float trArray[3];
-      
+
       //---------------------------------------------
       //Used to return a value of what the line module 'sees'
       bool moduleDetection(line module, float thresh);//returnable
@@ -32,6 +32,7 @@ namespace LineReadHeader{
       bool overwriteOption();
 
       //Private function to check for file (Only used in this class)
+      //Note: don't use the returning value of this function mearly call the function like a void func
       bool checkForFile(){
         //Make ifstream class used to read for a file name but not make one
         if(Brain.SDcard.isInserted()){

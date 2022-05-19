@@ -11,20 +11,20 @@ bool setVariable;
 
 //Call sd card class to a specific function and this function is local for this script
 void saveFile(LineReadCalibration* cal, bool toOverwrite, float thresholdArr[3]){
-  SDCARD* ptr = new SDCARD(toOverwrite, thresholdArr, cal);
+  SDCARD* sdPtr = new SDCARD(toOverwrite, thresholdArr, cal);
   wait(2, sec);
-  delete ptr;
+  delete sdPtr;
 }
 
 int LRH::Init(line lineArray[3], LRH _lrh){
   //Initialize
+  checkForFile();
   LineReadCalibration* cal = new LineReadCalibration;
   // Set the calibration class's bool to the returning value of checkForFile()
-  cal->toOverwrite = checkForFile();
 
   //Depending on the result of file check it will either
   //Make a new file or read/overwrite file if it exists
-  if(!fileExist){
+  if(fileExist){
     //File doesn't exist
     for(int i = 0; i < 3;){
       int x = 1 + i;
@@ -34,19 +34,21 @@ int LRH::Init(line lineArray[3], LRH _lrh){
       Brain.Screen.print("In loop %d", x);
       cal->Threshold[i] = cal->calibration(lineArray[i], x, _lrh);
       i++;
-
-      Brain.Screen.clearScreen();
-      Brain.Screen.print("CALIBRATION COMPLETED");
-
-      wait(2, sec);
-
-      //Save to file the treshold array
-      saveFile(cal, cal->toOverwrite, cal->Threshold);
     }
+
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("CALIBRATION COMPLETED");
+    Brain.Screen.newLine();
+
+    wait(2, sec);
+
+    //Save to file the treshold array
+    saveFile(cal, fileExist, cal->Threshold);
 
   }else{
     //File does exist
-    saveFile(cal, cal->toOverwrite, cal->Threshold);
+    saveFile(cal, fileExist, cal->Threshold);
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
     Brain.Screen.print("FILE ALREADY EXISTS");
@@ -85,10 +87,9 @@ bool LRH::overwriteOption(){
       return true;
     }else if(_controller.ButtonX.pressing()){
       // Button X for no to overwrite
-      break;
+      return false;
     }
   }
-  return false;
 }
 
 void LRH::userControl(void){
@@ -148,7 +149,12 @@ float LineReadCalibration::calibration(line module, int x, LRH _lrh){
     //Clear screen to make room for other responses and remove the already acknowledged values
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print("Module detection value is %d and in loop %d", module.value(analogUnits::pct), x);
+    //Check what kind of detection is the user doing
+    if(isCaliLight == true){
+      Brain.Screen.print("Module detection value for light is %d and in loop %d", module.value(analogUnits::pct), x);
+    }else{
+      Brain.Screen.print("Module detection value for dark is %d and in loop %d", module.value(analogUnits::pct), x);
+    }
 
     if(setVariable == true && isCaliLight == true){
       Brain.Screen.clearScreen();

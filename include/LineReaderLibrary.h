@@ -17,8 +17,6 @@ namespace ReadLineLibrary{
       // Make values or variables
       float Threshold[3];
 
-      bool toOverwrite;
-
       float calibration(line module, int i, LRH _lrh); //Function to do calibration of the line reader
   };
 
