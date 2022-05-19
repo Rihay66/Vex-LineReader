@@ -9,7 +9,7 @@ controller _controller;
 //This type is only used locally in this script
 bool setVariable;
 
-//Call sd card class to a specific function and this function is local
+//Call sd card class to a specific function and this function is local for this script
 void saveFile(LineReadCalibration* cal, bool toOverwrite, float thresholdArr[3]){
   SDCARD* ptr = new SDCARD(toOverwrite, thresholdArr, cal);
   wait(2, sec);

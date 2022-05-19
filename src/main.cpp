@@ -35,6 +35,7 @@ int main() {
   LRH _lrh;
   //call init to start calibration system and save file system
   if(!_lrh.Init(lineArray,_lrh)){
+    //This is for error checking
     return 1;
   }
   
