@@ -18,10 +18,9 @@ void saveFile(LineReadCalibration* cal, bool toOverwrite, float thresholdArr[3])
 
 int LRH::Init(line lineArray[3], LRH _lrh){
   //Initialize
-  if(!checkForFile()){
-    return 1;
-  }
   LineReadCalibration* cal = new LineReadCalibration;
+  // Set the calibration class's bool to the returning value of checkForFile()
+  cal->toOverwrite = checkForFile();
 
   //Depending on the result of file check it will either
   //Make a new file or read/overwrite file if it exists
@@ -194,7 +193,6 @@ float LineReadCalibration::calibration(line module, int x, LRH _lrh){
 SDCARD::SDCARD(bool toOverwrite, float arr[3], LineReadCalibration* cal){
   //Init the file or load the file if it exists
 
-  //[]Search for the file first and if not make a new one
   if(Brain.SDcard.isInserted()){
 
     ReadDATAFILE.open("SAVE.txt", std::ios::in);
@@ -227,9 +225,6 @@ SDCARD::SDCARD(bool toOverwrite, float arr[3], LineReadCalibration* cal){
   }else{
     Brain.Screen.print("ERROR: no SD Card inserted");
   }
-  //[]Store the values of the thresholds
-
-  //[]if file exist call translate function
 }
 
 //SD card destructor which can destroy the created object and do last functions
