@@ -1,5 +1,4 @@
 #include "LRH.h"
-#include "string"
 
 using namespace LineReadHeader;
 
@@ -21,16 +20,6 @@ namespace ReadLineLibrary{
       bool toOverwrite;
 
       float calibration(line module, int i, LRH _lrh); //Function to do calibration of the line reader
-  };
-
-  class LineRead{
-    public:
-      //int LateUpdate(void); //Used to update function and variables very late and will be run seperately but parallel to other loops
-      float moduleArray[3];
-      //---------------------------------------------
-      //Used to return a value of what the line module 'sees'
-      bool moduleDetection(line module, float thresh);//returnable
-      bool moduleDetectionInverted(line module, float thresh);//returnable
   };
 
   class SDCARD{

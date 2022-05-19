@@ -15,6 +15,14 @@ namespace LineReadHeader{
       //Handles user input
       static void userControl(void);
 
+      //Public array used for line threshold 
+      float trArray[3];
+      
+      //---------------------------------------------
+      //Used to return a value of what the line module 'sees'
+      bool moduleDetection(line module, float thresh);//returnable
+      bool moduleDetectionInverted(line module, float thresh);//returnable
+
     private:     
       //Calls the other classes and does the same thing as the current code on 'main.cpp'
       bool Input;

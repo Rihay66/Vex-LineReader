@@ -57,7 +57,10 @@ int LRH::Init(line lineArray[3], LRH _lrh){
   Brain.Screen.print("FILE check done");
   
   //Free memory
-  //float tmpArray[3] = {cal->Threshold[0], cal->Threshold[1], cal->Threshold[2]};
+  for(int i = 0; i < 3;){
+    trArray[i] = cal->Threshold[i];
+    i++;
+  }
   
   delete cal;
 
@@ -99,7 +102,7 @@ void LRH::userControl(void){
   }
 }
 
-bool LineRead::moduleDetectionInverted(line module, float thresh){
+bool LRH::moduleDetectionInverted(line module, float thresh){
 
   //Used to detect line reader value on inverted surfaces
 
@@ -112,7 +115,7 @@ bool LineRead::moduleDetectionInverted(line module, float thresh){
   }
 }
 
-bool LineRead::moduleDetection(line module, float thresh){
+bool LRH::moduleDetection(line module, float thresh){
 
   //Used to detect line reader value
 
